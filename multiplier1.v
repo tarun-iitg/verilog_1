@@ -2,7 +2,7 @@ module Mul_datapath(result,eqz,data_in,ldA,ldB,ldP,clrP,decB,clk);
    input ldA,ldB,ldP,clrP,decB,clk;
    input [15:0] data_in;
    output 	eqz;
-   output  [15:0] result;
+   output  reg [15:0] result;
    wire [15:0] 	 x,y,z,Bout,Bus ; //reg x,y,z,Bout are not permissible(port iss)
 
 
@@ -14,8 +14,8 @@ module Mul_datapath(result,eqz,data_in,ldA,ldB,ldP,clrP,decB,clk);
    ADDER AD(z,x,y);
    DEC_B DB(Bout,Bus,ldB,decB,clk);
    COMP  CP(eqz,Bout);
-
- assign  result=eqz ? 16'bx : y ;
+always@(eqz ) begin
+   result<=eqz ? y : 16'bx ; end
    assign Bus = data_in ;
    
 endmodule // Mul_datapath
@@ -92,9 +92,10 @@ module DEC_B(out,in,ld,en,clk ) ;
   
    
    always@(posedge clk)
+     
    case (1'b1)
      ld : out<=in ;
-     en : out<=out-1;
+     en : out<=out ? out-1: out;
      default :out<=out;
    endcase // case (1'b1)
 
